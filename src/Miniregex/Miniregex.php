@@ -219,7 +219,40 @@ class Miniregex{
      * @return boolean
     */
     public function matchURL($subject){
-        return (preg_match('', $subject) == 1) ? true : false;
+        /* Thanks to Jack at https://jkwl.io/php/regex/2015/05/18/url-validation-php-regex.html */
+        $regex = "#^" .
+        // protocol identifier
+        "(?:(?:https?|ftp):\\/\\/)?" .
+        // user:pass authentication
+        "(?:\\S+(?::\\S*)?@)?" .
+        "(?:" .
+        // IP address exclusion
+        // private & local networks
+        "(?!(?:10|127)(?:\\.\\d{1,3}){3})" .
+        "(?!(?:169\\.254|192\\.168)(?:\\.\\d{1,3}){2})" .
+        "(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})" .
+        // IP address dotted notation octets
+        // excludes loopback network 0.0.0.0
+        // excludes reserved space >= 224.0.0.0
+        // excludes network & broacast addresses
+        // (first & last IP address of each class)
+        "(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])" .
+        "(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}" .
+        "(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))" .
+        "|" .
+        // host name
+        "(?:(?:[a-z\\x{00a1}-\\x{ffff}0-9]-*)*[a-z\\x{00a1}-\\x{ffff}0-9]+)" .
+        // domain name
+        "(?:\\.(?:[a-z\\x{00a1}-\\x{ffff}0-9]-*)*[a-z\\x{00a1}-\\x{ffff}0-9]+)*" .
+        // TLD identifier
+        "(?:\\.(?:[a-z\\x{00a1}-\\x{ffff}]{2,}))" .
+        ")" .
+        // port number
+        "(?::\\d{2,5})?" .
+        // resource path
+        "(?:\\/\\S*)?" .
+        "$#ui"; // unicode enabled + case insensitive
+        return (preg_match($regex, $subject) === 1) ? true : false;
     }
 
     /**
@@ -229,17 +262,7 @@ class Miniregex{
      * @return boolean
     */
     public function matchEmail($subject){
-        return (preg_match('', $subject) == 1) ? true : false;
-    }
-
-    /**
-     * Match Credit Card
-     *
-     * @param  string $subject
-     * @return boolean
-    */
-    public function matchCreditCard($subject){
-        return (preg_match('', $subject) == 1) ? true : false;
+        return ( (preg_match("/[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+.[a-zA-Z]{2,4}/", $subject) === 1) || (filter_var($subject, FILTER_VALIDATE_EMAIL)) ) ? true : false;
     }
 
      /**
@@ -249,7 +272,7 @@ class Miniregex{
      * @return boolean
     */
     public function matchDate($subject){
-        return (eregi('/^((0?[1‐9]|[12][0‐9]|3[01])[‐ /.](0?[1‐9]|1[012])[‐ /.](19|20)?[0‐9]{2})*$/', $subject) == 1) ? true : false;
+        return (eregi('/^((0?[1‐9]|[12][0‐9]|3[01])[‐ /.](0?[1‐9]|1[012])[‐ /.](19|20)?[0‐9]{2})*$/', $subject) === 1) ? true : false;
     }
 
     /**
@@ -259,7 +282,7 @@ class Miniregex{
      * @return boolean
     */
     public function matchDate1($subject){
-        return (preg_match('#^((19|20)?[0‐9]{2}[‐ /.](0?[1‐9]|1[012])[‐ /.](0?[1‐9]|[12][0‐9]|3[01]))*$#', $subject) == 1) ? true : false;
+        return (preg_match('#^((19|20)?[0‐9]{2}[‐ /.](0?[1‐9]|1[012])[‐ /.](0?[1‐9]|[12][0‐9]|3[01]))*$#', $subject) === 1) ? true : false;
     }
 
     /**
@@ -269,7 +292,7 @@ class Miniregex{
      * @return boolean
     */
     public function matchDate2($subject){
-        return (preg_match('/^((0?[1‐9]|1[012])[‐ /.](0?[1‐9]|[12][0‐9]|3[01])[‐ /.](19|20)?[0‐9]{2})*$/', $subject) == 1) ? true : false;
+        return (preg_match('/^((0?[1‐9]|1[012])[‐ /.](0?[1‐9]|[12][0‐9]|3[01])[‐ /.](19|20)?[0‐9]{2})*$/', $subject) === 1) ? true : false;
     }
 
 
